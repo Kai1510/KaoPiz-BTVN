@@ -18,14 +18,7 @@ use App\Http\Controllers\BaiSauController;
 |
 */
 
-// Route::get('/', function () {
-//     return view('form');
-// })->name('form');
 
-
-// Route::post('/', [FormController::class, 'add']);
-
-// Route::get('/list', [FormController::class, 'show']);
 Route::get('', function() {
 	return view('home');
 });
