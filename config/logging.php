@@ -99,6 +99,12 @@ return [
         'emergency' => [
             'path' => storage_path('logs/laravel.log'),
         ],
+        'after_login' => [
+            'driver'=> 'custom',
+            'path'=> storage_path('logs/login.log'),
+            'level' => env('LOG_LEVEL', 'debug'),
+            'permission' => 777,
+        ],
     ],
 
 ];

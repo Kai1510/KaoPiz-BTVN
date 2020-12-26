@@ -1,16 +1,24 @@
 @extends('layout2.app')
 @section('content')
 @if (session('status'))
-                    <div class="alert alert-warning">
-                        {{session('status') }}
-                    </div>
-                @endif
+    <div class="alert alert-warning">
+        {{session('status') }}
+    </div>
+@endif
+<div class="text-center">
+	<button type="button" class="btn btn-primary">
+		<a href="{{route('bai6.create')}}">Add</a>
+	</button>
+</div>
 	<table class="table">
 		<thead>
 			<tr>
 				<th>ID</th>
 				<th>Title</th>
 				<th>Content</th>
+				<th>Author</th>
+				<th>Category</th>
+				<th>Image</th>
 				<th>Action</th>
 			</tr>
 		</thead>
@@ -20,6 +28,20 @@
 				<td>{{$p->id}}</td>
 				<td>{{$p->title}}</td>
 				<td>{{$p->content}}</td>
+				<td>@if($p->user)
+					{{$p->user->name}}
+					@endif
+				</td>
+				<td>
+					@if($p->categories)
+					@foreach($p->categories as $a)
+					{{$a->name}}
+					@endforeach
+					@endif
+				</td>
+				<td>
+					<img width="100px" height="100px" src="{{$p->image}}"/>
+				</td>
 				<td>
 					<a class="btn btn-warning" href="{{route('bai6.edit', $p->id)}}">Sửa</a>
 					<button type="button" class="btn btn-danger delete-button" data-id="{{$p->id}}">Xóa</button>

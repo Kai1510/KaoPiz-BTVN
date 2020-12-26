@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Post;
-
+use App\Models\User;
+use App\Models\Category;
+use App\Http\Requests\CreatePostRequest;
 class BaiSauController extends Controller
 {
     /**
@@ -14,7 +16,7 @@ class BaiSauController extends Controller
      */
     public function index()
     {
-        $ps = Post::query()->paginate(20);
+        $ps = Post::with('user')->with('categories')->paginate(20);
         return view('bai6.index', ['posts'=>$ps]);
     }
 
@@ -25,7 +27,9 @@ class BaiSauController extends Controller
      */
     public function create()
     {
-        return view('bai6.create');
+        $us = User::query()->get();
+        $cs = Category::query()->get();
+        return view('bai6.create', ['us'=>$us, 'cs'=>$cs]);
     }
 
     /**
@@ -34,19 +38,27 @@ class BaiSauController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
-    {
-        if($request->input('slug')===null) {
-            return redirect()->route('bai6.create')->with('status','Hãy nhập đủ thông tin');
+    public function store(CreatePostRequest $request)
+    {   
+        $image = "";
+        if($request->hasFile('image')) {
+            $file = $request->image;
+            $file->move(public_path('upload'), $file->getClientOriginalName());
+            $image = 'upload/'.$file->getClientOriginalName();  
+
         }
-        if($request->input('title')===null) {
-            return redirect()->route('bai6.create')->with('status','Hãy nhập đủ thông tin');
-        }
-        if($request->input('content')===null) {
-            return redirect()->route('bai6.create')->with('status','Hãy nhập đủ thông tin');
-        }
-        Post::query()->create($request->only('slug', 'title', 'content'));
-        return redirect()->route('bai6.index')->with('status','Thêm thành công');;
+        // $p = Post::query()->create($request->only('slug', 'title', 'content', 'user_id'), $image);
+        $p = new Post();
+        $p->slug = $request->slug;
+        $p->title = $request->title;
+        $p->content = $request->content;
+        $p->image = $image;
+        $p->save();
+        $p->categories()->attach($request->categories);
+
+
+
+        return redirect()->route('bai6.index')->with('status','Thêm thành công');
 
     }
 
@@ -69,8 +81,10 @@ class BaiSauController extends Controller
      */
     public function edit($id)
     {
-        $p = Post::query()->findOrFail($id);
-        return view('bai6.edit', ['p'=>$p]);
+        $us = User::query()->get();
+        $cs = Category::query()->get();
+        $p = Post::with('user')->findOrFail($id);
+        return view('bai6.edit', ['p'=>$p, 'us'=>$us, 'cs'=>$cs]);
     }
 
     /**
@@ -83,8 +97,8 @@ class BaiSauController extends Controller
     public function update(Request $request, $id)
     {
         $post = Post::query()->findOrFail($id);
-        $post->update($request->only('slug','title', 'content'));
-        return redirect()->route('bai6.index');
+        $post->update($request->only('slug','title', 'content','user_id'));
+        return redirect()->route('bai6.index')->with('status','Sửa thành công');
     }
 
     /**
