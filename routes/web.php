@@ -2,11 +2,12 @@
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\DB;
-use App\Models\P;
 use App\Http\Controllers\FormController;
 use App\Http\Controllers\BaiHaiController;
 use App\Http\Controllers\BaiBonController;
 use App\Http\Controllers\BaiSauController;
+use App\Models\User;
+use App\Models\Post;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -40,3 +41,13 @@ Route::get('/bai5', function() {
 });
 
 Route::resource('bai6', BaiSauController::class);
+
+Route::get('a', function() {
+	$u = User::with('profile')->find(1);
+	dd($u->toArray());
+});
+
+Route::get('b', function() {
+	$u = User::with('posts')->find(1);
+	dd($u->toArray());
+});
